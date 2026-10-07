@@ -11,8 +11,13 @@ Static site on the shared luxury base. Serve with `npx serve maiben`.
 ## Content
 Flavours, prices, phone and Instagram come from the original Maiben site. Orders are not sent anywhere: the order form shows a summary to confirm by phone/text. Add a real order endpoint or email before relying on it.
 
-## Orders and enquiries
-Forms are submitted on the site and saved to Supabase (project `maiben`, `fnhtcfwjdajsrcmpizki`, Sydney). The only link customers leave the site for is `paymentUrl` in `js/config.js`.
-- Read them: Supabase dashboard > Table Editor > `orders` / `enquiries` (Export to CSV from the table toolbar).
-- The key in `js/config.js` is a publishable key. Row-level security lets it INSERT only; it cannot read or change rows. Totals are recomputed by a database trigger, so prices cannot be tampered with from the browser.
-- `orders.status` starts as `new`; change it in the dashboard as orders are paid and fulfilled.
+## Orders, payment and enquiries
+- **Orders are saved only after payment.** The order form calls the `create-checkout` Edge Function, which builds a Stripe Checkout session (price from a server-side table, plus $5 for Melbourne delivery) and returns its URL. The customer pays on Stripe (the only link that leaves the site). When Stripe confirms payment it calls `stripe-webhook`, which verifies the signature and then inserts the row into `orders`. Unpaid or abandoned checkouts are never stored. The browser has no write access to `orders`.
+- **Bulk enquiries** are not payments and are saved immediately to `enquiries`.
+- **Read them:** Supabase dashboard (project `maiben`) > Table Editor > `orders` / `enquiries` (Export CSV in the toolbar). `orders.status` is `paid`, or `check amount` if Stripe's total differed from the expected price.
+- **Setup needed once (secrets live in Supabase, never in this repo):**
+  1. Supabase > Edge Functions > Secrets: add `STRIPE_SECRET_KEY`.
+  2. Stripe > Developers > Webhooks > add endpoint `https://fnhtcfwjdajsrcmpizki.supabase.co/functions/v1/stripe-webhook` for `checkout.session.completed` and `checkout.session.async_payment_succeeded`.
+  3. Copy that endpoint's signing secret into Supabase secret `STRIPE_WEBHOOK_SECRET`.
+  Use Stripe test keys first (test card 4242 4242 4242 4242).
+- Tests: `node --experimental-strip-types supabase/tests/payments.test.mjs`

@@ -120,3 +120,6 @@ h2 em,.stage h1 em,.stage h2 em{font-style:italic;font-weight:400;color:var(--am
     radial-gradient(ellipse 90% 40% at 50% 26%,color-mix(in srgb,var(--flav) 46%,#fff) 0%,rgba(255,255,255,0) 75%),
     linear-gradient(180deg,color-mix(in srgb,var(--flav) 32%,#FBF6EA) 0%,color-mix(in srgb,var(--flav) 16%,#FBF6EA) 100%)}
 }
+
+.price-note{margin:14px 4px 0;font-size:14px;color:var(--brown-2)}
+.price-note strong{color:var(--ink)}

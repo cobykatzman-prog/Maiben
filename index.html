@@ -192,6 +192,7 @@
         <thead><tr><th scope="col">Size</th><th scope="col">Price</th></tr></thead>
         <tbody><tr><td>250g</td><td>$15</td></tr><tr><td>500g</td><td>$28</td></tr><tr><td>750g</td><td>$40</td></tr><tr><td>1kg</td><td>$50</td></tr></tbody>
       </table>
+      <p class="price-note">Pickup is free. Melbourne delivery is <strong>$5 extra</strong> per order.</p>
     </div>
   </div>
 </section>
@@ -267,23 +268,15 @@
       <div class="field"><label for="bk-name">Your name</label><input id="bk-name" name="name" autocomplete="name" maxlength="120" required></div>
       <div class="row2"><div class="field"><label for="bk-phone">Mobile</label><input id="bk-phone" name="phone" type="tel" inputmode="tel" autocomplete="tel" maxlength="30" required></div>
       <div class="field"><label for="bk-email">Email <span class="opt">(optional)</span></label><input id="bk-email" name="email" type="email" autocomplete="email" maxlength="200"></div></div>
-      <div class="field"><label for="bk-how">Pickup or delivery</label><select id="bk-how" name="fulfilment"><option value="pickup">Pickup</option><option value="delivery">Melbourne delivery</option></select></div>
+      <div class="field"><label for="bk-how">Pickup or delivery</label><select id="bk-how" name="fulfilment"><option value="pickup">Pickup</option><option value="delivery">Melbourne delivery (+$5)</option></select></div>
       <div class="field" id="bk-addr-wrap" hidden><label for="bk-addr">Delivery address</label><input id="bk-addr" name="address" autocomplete="street-address" maxlength="300"></div>
       <div class="field"><label for="bk-notes">Notes <span class="opt">(optional)</span></label><textarea id="bk-notes" name="notes" rows="2" maxlength="1000" placeholder="Date you need it by, allergies, anything we should know"></textarea></div>
       <input class="hp" type="text" name="website" tabindex="-1" autocomplete="off" aria-hidden="true">
       <p class="bk-total" id="bk-total" aria-live="polite"></p>
-      <button class="btn-gold wide" type="submit" id="bk-submit">Place Order &amp; Pay <span aria-hidden="true">&rarr;</span></button>
+      <button class="btn-gold wide" type="submit" id="bk-submit">Continue to Payment <span aria-hidden="true">&rarr;</span></button>
       <p class="form-msg" id="bk-msg" role="status"></p>
     </form>
-    <div class="order-out" id="order-out" hidden>
-      <div class="ok-badge" aria-hidden="true">&#10003;</div>
-      <h3>Order received</h3>
-      <p class="order-sum" id="order-sum"></p>
-      <p class="note-small" id="order-ref"></p>
-      <p class="note-small" id="pay-note"></p>
-      <a class="btn-gold wide" id="pay-btn" href="#">Continue to payment <span aria-hidden="true">&rarr;</span></a>
-    </div>
-    <p class="note-small foot-note">Your order is saved with us first. Payment is the only step on another site.</p>
+    <p class="note-small foot-note">Secure card payment by Stripe. Your order is only confirmed and saved once payment goes through.</p>
   </div>
 </div>
 
@@ -306,6 +299,18 @@
       <div class="ok-badge" aria-hidden="true">&#10003;</div>
       <h3>Thanks, we have it</h3>
       <p class="note-small">Benj will come back to you with a quote.</p>
+    </div>
+  </div>
+</div>
+
+<div class="modal" id="paid-modal" role="dialog" aria-modal="true" aria-labelledby="pd-title" hidden>
+  <div class="dialog"><div class="grab" aria-hidden="true"></div>
+    <button class="modal-close" data-close aria-label="Close">&times;</button>
+    <div class="order-out">
+      <div class="ok-badge" aria-hidden="true">&#10003;</div>
+      <h2 id="pd-title">Payment received</h2>
+      <p>Thank you. Your order is confirmed. Benj will text you with pickup or delivery details.</p>
+      <button class="btn-gold wide" data-close>Back to the site</button>
     </div>
   </div>
 </div>

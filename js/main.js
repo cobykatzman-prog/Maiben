@@ -85,74 +85,86 @@
   sIn.addEventListener('input', () => runSearch(sIn.value));
   $$('.chips button').forEach((b) => b.addEventListener('click', () => { sIn.value = b.dataset.q; runSearch(b.dataset.q); sIn.focus(); }));
 
-  /* ---- Orders + enquiries: saved to Supabase, then (orders only) on to payment ---- */
+  /* ---- Orders: nothing is saved until Stripe confirms payment (see supabase/functions) ---- */
   const CFG = window.MAIBEN || {};
-  const PRICE = { 250: 15, 500: 28, 750: 40, 1000: 50 };
+  const PRICE = { 250: 15, 500: 28, 750: 40, 1000: 50 }, DELIVERY = 5;
   const sizeLabel = (g) => (g >= 1000 ? '1kg' : g + 'g');
-  const bkForm = $('#booking-form'), out = $('#order-out');
+  const bkForm = $('#booking-form');
   const emailOk = (v) => !v || /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v);
+  const fail = (el, msg) => { el.textContent = msg; el.classList.add('err'); };
+  const callLine = () => `Or call Benj on ${CFG.phone || '0422 601 402'}.`;
+  const fn = (name, body) => fetch(`${CFG.supabaseUrl}/functions/v1/${name}`, {
+    method: 'POST', headers: { apikey: CFG.supabaseKey, 'Content-Type': 'application/json' }, body: JSON.stringify(body),
+  });
+  // Enquiries are not payments, so they are saved straight away.
   const save = async (table, row) => {
     const r = await fetch(`${CFG.supabaseUrl}/rest/v1/${table}`, {
-      method: 'POST',
-      headers: { apikey: CFG.supabaseKey, 'Content-Type': 'application/json', Prefer: 'return=minimal' },
-      body: JSON.stringify(row),
+      method: 'POST', headers: { apikey: CFG.supabaseKey, 'Content-Type': 'application/json', Prefer: 'return=minimal' }, body: JSON.stringify(row),
     });
     if (!r.ok) throw new Error('save failed ' + r.status);
   };
-  const fail = (el, msg) => { el.textContent = msg; el.classList.add('err'); };
-  const callLine = () => `Or call Benj on ${CFG.phone || '0422 601 402'}.`;
 
-  const updateTotal = () => {
-    const q = Math.max(1, Math.min(99, +$('#bk-qty').value || 1)), g = +$('#bk-size').value;
-    $('#bk-total').textContent = `${q} × ${sizeLabel(g)} ${$('#bk-flavour').value} = $${PRICE[g] * q}`;
+  const totalFor = () => {
+    const q = Math.max(1, Math.min(99, +$('#bk-qty').value || 1)), g = +$('#bk-size').value, d = $('#bk-how').value === 'delivery';
+    return { q, g, d, total: PRICE[g] * q + (d ? DELIVERY : 0) };
   };
-  ['#bk-flavour', '#bk-size', '#bk-qty'].forEach((s) => $(s).addEventListener('input', updateTotal));
+  const updateTotal = () => {
+    const { q, g, d, total } = totalFor();
+    $('#bk-total').textContent = `${q} × ${sizeLabel(g)} ${$('#bk-flavour').value}${d ? ' + $5 delivery' : ''} = $${total}`;
+  };
+  ['#bk-flavour', '#bk-size', '#bk-qty', '#bk-how'].forEach((s) => $(s).addEventListener('input', updateTotal));
   $$('.stepper button').forEach((b) => b.addEventListener('click', () => setTimeout(updateTotal, 0)));
   $('#bk-how').addEventListener('change', () => {
     const d = $('#bk-how').value === 'delivery';
-    $('#bk-addr-wrap').hidden = !d; $('#bk-addr').required = d;
+    $('#bk-addr-wrap').hidden = !d; $('#bk-addr').required = d; updateTotal();
   });
   updateTotal();
 
+  const btnLabel = 'Continue to Payment ';
   bkForm.addEventListener('submit', async (e) => {
     e.preventDefault();
     const msg = $('#bk-msg'); msg.classList.remove('err'); msg.textContent = '';
     const fd = new FormData(bkForm);
-    if (fd.get('website')) { out.hidden = false; bkForm.hidden = true; return; }          // honeypot: pretend success
     const name = (fd.get('name') || '').trim(), phone = (fd.get('phone') || '').trim(), email = (fd.get('email') || '').trim();
     const how = fd.get('fulfilment'), addr = (fd.get('address') || '').trim();
     if (!name) return fail(msg, 'Please add your name.');
     if (phone.replace(/\D/g, '').length < 6) return fail(msg, 'Please add a mobile number we can reach you on.');
     if (!emailOk(email)) return fail(msg, 'That email address does not look right.');
     if (how === 'delivery' && addr.length < 5) return fail(msg, 'Please add your delivery address.');
-    const row = {
-      id: crypto.randomUUID(), flavour: fd.get('flavour'), size_g: +fd.get('size_g'), quantity: Math.max(1, Math.min(99, +fd.get('quantity') || 1)),
-      fulfilment: how, name, phone, email: email || null, address: how === 'delivery' ? addr : null, notes: (fd.get('notes') || '').trim() || null,
-    };
-    const btn = $('#bk-submit'); btn.disabled = true; btn.firstChild.textContent = 'Saving your order… ';
+    const btn = $('#bk-submit'); btn.disabled = true; btn.firstChild.textContent = 'Taking you to secure payment… ';
     try {
-      await save('orders', row);
+      const r = await fn('create-checkout', {
+        flavour: fd.get('flavour'), size_g: +fd.get('size_g'), quantity: Math.max(1, Math.min(99, +fd.get('quantity') || 1)),
+        fulfilment: how, name, phone, email, address: how === 'delivery' ? addr : '', notes: (fd.get('notes') || '').trim(), website: fd.get('website') || '',
+      });
+      const data = await r.json().catch(() => ({}));
+      if (r.status === 503) throw new Error('payments off');
+      if (!r.ok || !data.url) throw new Error('checkout failed');
+      window.location.href = data.url;          // the only link that leaves the site
     } catch (err) {
-      btn.disabled = false; btn.firstChild.textContent = 'Place Order & Pay ';
-      return fail(msg, `We could not save your order just now. Please try again. ${callLine()}`);
+      btn.disabled = false; btn.firstChild.textContent = btnLabel;
+      fail(msg, err.message === 'payments off'
+        ? `Online payment is not switched on yet. ${callLine()}`
+        : `We could not start your payment just now. Nothing has been charged. Please try again. ${callLine()}`);
     }
-    const total = PRICE[row.size_g] * row.quantity;
-    $('#order-sum').textContent = `${row.quantity} × ${sizeLabel(row.size_g)} ${row.flavour} · $${total} · ${how === 'delivery' ? 'Melbourne delivery' : 'Pickup'}`;
-    $('#order-ref').textContent = `Reference ${row.id.slice(0, 8).toUpperCase()}`;
-    const pay = CFG.paymentUrl;
-    $('#pay-btn').href = pay || '#';
-    $('#pay-note').textContent = pay ? `Your order is saved. Pay $${total} on the next page to confirm it.` : `Your order is saved. Benj will send you a payment link shortly.`;
-    $('#pay-btn').hidden = !pay;
-    out.hidden = false; bkForm.hidden = true;
-    try { navigator.vibrate && navigator.vibrate(12); } catch (e2) {}
   });
   // Reopening the sheet starts a fresh order
   document.addEventListener('click', (e) => {
     if (e.target.closest('[data-open="booking-modal"],.ab-order')) {
-      out.hidden = true; bkForm.hidden = false; $('#bk-submit').disabled = false; $('#bk-submit').firstChild.textContent = 'Place Order & Pay '; $('#bk-msg').textContent = ''; updateTotal();
+      $('#bk-submit').disabled = false; $('#bk-submit').firstChild.textContent = btnLabel; $('#bk-msg').textContent = ''; updateTotal();
     }
     if (e.target.closest('[data-open="enquiry-modal"]')) { $('#eq-done').hidden = true; $('#enquiry-form').hidden = false; $('#eq-msg').textContent = ''; }
   }, true);
+
+  // Coming back from Stripe
+  const qs = new URLSearchParams(location.search);
+  if (qs.has('paid') || qs.has('cancelled')) {
+    history.replaceState(null, '', location.pathname + location.hash);
+    setTimeout(() => {
+      if (qs.has('paid')) open('paid-modal');
+      else { open('booking-modal'); const m2 = $('#bk-msg'); m2.classList.remove('err'); m2.textContent = 'Payment cancelled. Nothing was charged or saved.'; }
+    }, 600);
+  }
 
   const eqForm = $('#enquiry-form');
   eqForm.addEventListener('submit', async (e) => {
