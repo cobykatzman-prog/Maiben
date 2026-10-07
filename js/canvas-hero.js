@@ -15,7 +15,7 @@ function onStage(i, pct) {
   if (i !== shown) {
     shown = i;
     frame.style.setProperty('--flav', FLAV[i]);
-    if (bgword) { bgword.classList.remove('swap'); void bgword.offsetWidth; bgword.textContent = WORD[i]; bgword.classList.add('swap'); }
+    if (bgword) { bgword.classList.remove('swap'); void bgword.offsetWidth; bgword.textContent = WORD[i]; bgword.style.setProperty('--len', WORD[i].length); bgword.classList.add('swap'); }
     stages.forEach((s, k) => s.classList.toggle('active', k === i));
     nums.forEach((n, k) => n.classList.toggle('active', k === i));
     photos.forEach((p, k) => p.classList.toggle('on', k === i));

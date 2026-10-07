@@ -121,6 +121,10 @@ export async function startHero(onStage) {
     rig.position.set(wide ? Math.min(2.5, w / h * 1.4) : 0, wide ? -0.1 : 1.32, 0);
     baseScale = wide ? 0.86 : Math.min(0.54, (w / h) * 1.2);
     rig.scale.setScalar(baseScale);
+    camera.updateMatrixWorld();
+    // where the front tub lands on screen, so the CSS flavour word can centre on it
+    const tp = new THREE.Vector3(rig.position.x, rig.position.y, 3.2 * baseScale).project(camera);
+    canvas.parentElement.style.setProperty('--tubx', ((tp.x + 1) / 2 * 100).toFixed(1) + '%');
   };
   size(); addEventListener('resize', size, { passive: true });
 
