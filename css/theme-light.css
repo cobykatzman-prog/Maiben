@@ -1,7 +1,7 @@
 /* Maiben: light, sleek, modern skin. Loaded last; overrides the shared base.
  * Palette: ivory + white + sea-mist, navy ink, one amber accent. Big radii, hairlines, soft shadows. */
 :root{
-  --ivory:#F7F5F0; --paper:#FFFFFF; --mist:#EAF1F3; --sand:#F1EADD;
+  --ivory:#F8F4EC; --paper:#FFFDF9; --mist:#EEF1EA; --sand:#EFE3D0;
   --ink:#0F1B2D; --ink-2:#4A5A70; --ink-3:#7C8aa0; --line:rgba(15,27,45,.10);
   --amber:#E8A33D; --amber-hi:#F2B95C; --amber-dk:#A96E12; --sea:#2E8B97;
   --r-card:28px; --r-img:20px;
@@ -188,4 +188,98 @@ p{color:var(--ink-2)}
   .grab::after{background:rgba(15,27,45,.25)}
   .yacht-dialog .grab::after{background:rgba(255,255,255,.85)}
   .fleet-grid.four .yacht-card{background:var(--ivory)}
+}
+
+/* ============ Herring colours: mustard, chilli, schmaltz green, 7-spice brown ============ */
+@property --flav{syntax:'<color>';inherits:true;initial-value:#D9A41E}
+:root{
+  --f-mustard:#D9A41E; --f-chilli:#B83A2C; --f-schmaltz:#6E8B3D; --f-spiced:#8A5A33; --onion:#8E4F7A;
+  --brown:#2B1D14; --brown-2:#6B5444;
+}
+/* paper grain so surfaces feel printed, not rendered */
+body::after{content:"";position:fixed;inset:0;pointer-events:none;z-index:9999;opacity:.05;mix-blend-mode:multiply;
+  background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='180' height='180'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 .2  0 0 0 0 .13  0 0 0 0 .08  0 0 0 .9 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>")}
+/* warm brown ink for body copy; navy stays for the brand */
+p{color:var(--brown-2)}
+.stage p,.about-copy p,.features p,.section-head p,.dest-copy p{color:var(--brown-2)}
+
+/* Hero follows the flavour on screen */
+.hero-sticky-frame{--flav:#D9A41E;transition:--flav .9s ease;background:
+  radial-gradient(ellipse 50% 66% at 74% 50%,color-mix(in srgb,var(--flav) 26%,#fff) 0%,rgba(255,255,255,0) 72%),
+  radial-gradient(ellipse 36% 46% at 8% 96%,color-mix(in srgb,var(--flav) 14%,transparent) 0%,transparent 70%),
+  linear-gradient(160deg,color-mix(in srgb,var(--flav) 7%,#EEF1EA) 0%,#F8F4EC 55%,#EFE3D0 100%)}
+.eyebrow-hero{color:color-mix(in srgb,var(--flav) 70%,#000)}
+.hud-num::before{content:"";display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:8px;vertical-align:1px}
+.hud-num[data-hud="0"]::before{background:var(--f-mustard)}
+.hud-num[data-hud="1"]::before{background:var(--f-chilli)}
+.hud-num[data-hud="2"]::before{background:var(--f-schmaltz)}
+.hud-num[data-hud="3"]::before{background:var(--f-spiced)}
+.hero-btns .btn-gold{background:color-mix(in srgb,var(--flav) 38%,var(--ink))}
+.hero-btns .btn-gold:hover{background:color-mix(in srgb,var(--flav) 62%,var(--ink))}
+.cert::before{background:var(--f-schmaltz)}
+.hud-bar i{background:var(--flav)}
+
+/* Flavour cards each wear their own colour */
+.yacht-card[data-yacht=mustard]{--c:var(--f-mustard);--ct:#2B1D14}
+.yacht-card[data-yacht=chilli]{--c:var(--f-chilli);--ct:#fff}
+.yacht-card[data-yacht=schmaltz]{--c:var(--f-schmaltz);--ct:#fff}
+.yacht-card[data-yacht=spiced]{--c:var(--f-spiced);--ct:#fff}
+.yacht-card{background:color-mix(in srgb,var(--c) 9%,var(--ivory))}
+.yacht-card:hover{background:color-mix(in srgb,var(--c) 14%,#fff);border-color:color-mix(in srgb,var(--c) 45%,transparent);box-shadow:0 22px 50px color-mix(in srgb,var(--c) 30%,transparent)}
+.yc-tag{background:var(--c);color:var(--ct)}
+.yc-body h3{position:relative}
+.yc-body h3::after{content:"";display:block;width:34px;height:3px;border-radius:3px;background:var(--c);margin-top:10px}
+.yacht-card:hover .yc-go{background:var(--c);border-color:var(--c);color:var(--ct)}
+.yc-rate strong{color:color-mix(in srgb,var(--c) 70%,#000)}
+.yacht-card .yc-specs{color:color-mix(in srgb,var(--c) 55%,#6B5444)}
+
+/* Sections */
+.section.dark{background:var(--paper)}
+.split{background:var(--sand)}
+.stats>div:nth-child(1) .stat-figure{color:#A97810}
+.stats>div:nth-child(2) .stat-figure{color:var(--f-chilli)}
+.stats>div:nth-child(3) .stat-figure{color:#55702F}
+.stats>div:nth-child(4) .stat-figure{color:var(--f-spiced)}
+.features li:nth-child(1) .ico{border-color:var(--f-mustard);color:#A97810}
+.features li:nth-child(2) .ico{border-color:var(--f-chilli);color:var(--f-chilli)}
+.features li:nth-child(3) .ico{border-color:var(--f-schmaltz);color:#55702F}
+.features li:nth-child(4) .ico{border-color:var(--f-spiced);color:var(--f-spiced)}
+.destinations{background:#F1EADB}
+.legend{display:flex;flex-wrap:wrap;gap:8px 18px;margin:0 0 26px;padding:0;list-style:none;font-size:13px;color:var(--brown-2)}
+.legend li{display:flex;align-items:center;gap:8px}
+.legend i{width:11px;height:11px;border-radius:50%;background:var(--c)}
+.pricetable td:last-child{color:var(--brown)}
+.pricetable tr:nth-child(1) td:first-child{box-shadow:inset 4px 0 var(--f-mustard)}
+.pricetable tr:nth-child(2) td:first-child{box-shadow:inset 4px 0 var(--f-chilli)}
+.pricetable tr:nth-child(3) td:first-child{box-shadow:inset 4px 0 var(--f-schmaltz)}
+.pricetable tr:nth-child(4) td:first-child{box-shadow:inset 4px 0 var(--f-spiced)}
+/* Occasion cards: colour wash per card */
+.swiper-slide:nth-child(1) .dc-label{background:linear-gradient(transparent,color-mix(in srgb,var(--f-schmaltz) 88%,#10150a))}
+.swiper-slide:nth-child(2) .dc-label{background:linear-gradient(transparent,color-mix(in srgb,var(--f-spiced) 88%,#1a0f08))}
+.swiper-slide:nth-child(3) .dc-label{background:linear-gradient(transparent,color-mix(in srgb,var(--f-mustard) 82%,#2a1c00))}
+.swiper-slide:nth-child(4) .dc-label{background:linear-gradient(transparent,color-mix(in srgb,var(--f-chilli) 88%,#200503))}
+.swiper-slide:nth-child(5) .dc-label{background:linear-gradient(transparent,color-mix(in srgb,var(--onion) 85%,#14070f))}
+.swiper-slide:nth-child(6) .dc-label{background:linear-gradient(transparent,color-mix(in srgb,var(--f-spiced) 88%,#1a0f08))}
+.dc-label span{color:rgba(255,255,255,.88)}
+.dc-label h3{color:#fff}
+
+/* Four-colour stripe: the brand's signature, used sparingly */
+.cta-banner{position:relative}
+#footer{background:#2B1D14;color:#F3EADB;position:relative;border-top:0}
+#footer::before{content:"";position:absolute;left:0;right:0;top:0;height:6px;background:linear-gradient(90deg,var(--f-mustard) 0 25%,var(--f-chilli) 25% 50%,var(--f-schmaltz) 50% 75%,var(--f-spiced) 75% 100%)}
+.foot-bio,#footer li{color:rgba(243,234,219,.72)}
+#footer h4{color:#F3EADB}
+#footer li a:hover{color:var(--f-mustard)}
+.foot-bar{border-top-color:rgba(243,234,219,.14);color:rgba(243,234,219,.55)}
+.foot-brand,.foot-brand span{color:#F3EADB}
+.foot-brand em{color:var(--f-mustard)}
+.press{display:none}
+@media (max-width:992px){
+  #site-nav a:nth-child(1){border-left:4px solid var(--f-mustard);padding-left:14px}
+  #site-nav a:nth-child(2){border-left:4px solid var(--f-chilli);padding-left:14px}
+  #site-nav a:nth-child(3){border-left:4px solid var(--f-schmaltz);padding-left:14px}
+  #site-nav a:nth-child(4){border-left:4px solid var(--f-spiced);padding-left:14px}
+  #site-nav a:nth-child(5){border-left:4px solid var(--onion);padding-left:14px}
+  #site-nav a:nth-child(6){border-left:4px solid var(--brown);padding-left:14px}
+  body::after{opacity:.04}
 }

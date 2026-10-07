@@ -5,11 +5,14 @@ const stages = [...document.querySelectorAll('.stage')];
 const nums = [...document.querySelectorAll('.hud-num')];
 const photos = [...document.querySelectorAll('.hero-photos img')];
 const fill = document.getElementById('hud-fill');
+const frame = document.querySelector('.hero-sticky-frame');
+const FLAV = ['#D9A41E', '#B83A2C', '#6E8B3D', '#8A5A33'];   // mustard, chilli, schmaltz, 7 spiced
 let shown = -1;
 
 function onStage(i, pct) {
   if (i !== shown) {
     shown = i;
+    frame.style.setProperty('--flav', FLAV[i]);
     stages.forEach((s, k) => s.classList.toggle('active', k === i));
     nums.forEach((n, k) => n.classList.toggle('active', k === i));
     photos.forEach((p, k) => p.classList.toggle('on', k === i));
