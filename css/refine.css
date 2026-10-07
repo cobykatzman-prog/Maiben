@@ -20,7 +20,8 @@ h2 em,.stage h1 em,.stage h2 em{font-style:italic;font-weight:400;color:var(--am
   color:color-mix(in srgb,var(--flav) 17%,transparent);transition:color .9s ease}
 .hero-bgword.swap{animation:word .7s cubic-bezier(.16,1,.3,1)}
 @keyframes word{from{transform:translate(40px,-52%);opacity:0}to{transform:translateY(-52%);opacity:1}}
-.stamp{position:absolute;z-index:3;right:clamp(24px,5vw,90px);top:132px;width:112px;height:112px;color:color-mix(in srgb,var(--flav) 55%,#2B1D14);pointer-events:none;animation:spin 26s linear infinite;transition:color .9s}
+.stamp{position:absolute;z-index:3;right:clamp(24px,5vw,90px);top:132px;width:112px;height:112px;color:color-mix(in srgb,var(--flav) 55%,#2B1D14);pointer-events:none;transition:color .9s}
+.stamp .ring{transform-origin:60px 60px;animation:spin 30s linear infinite}
 @keyframes spin{to{transform:rotate(360deg)}}
 
 /* ---- Flavour cards: confident, saturated, a little staggered ---- */
@@ -72,7 +73,7 @@ h2 em,.stage h1 em,.stage h2 em{font-style:italic;font-weight:400;color:var(--am
   .stage h1,.stage h2{font-size:clamp(40px,11vw,54px)}
 }
 @media (max-width:480px){.stamp{width:64px;height:64px}}
-@media (prefers-reduced-motion:reduce){.stamp{animation:none}.hero-bgword.swap{animation:none}}
+@media (prefers-reduced-motion:reduce){.stamp .ring{animation:none}.hero-bgword.swap{animation:none}}
 
 /* ---- Centring pass ---- */
 @media (min-width:993px){
