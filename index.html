@@ -18,7 +18,7 @@
 </script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,600&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400..700;1,9..144,400..700&family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,600&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="css/vendor/swiper-bundle.min.css">
 <link rel="stylesheet" href="css/vendor/aos.css">
 <link rel="stylesheet" href="css/style.css">
@@ -26,6 +26,7 @@
 <link rel="stylesheet" href="css/responsive.css">
 <link rel="stylesheet" href="css/mobile.css">
 <link rel="stylesheet" href="css/theme-light.css">
+<link rel="stylesheet" href="css/refine.css">
 <script type="importmap">{"imports":{"three":"./js/vendor/three.module.min.js"}}</script>
 </head>
 <body>
@@ -52,7 +53,9 @@
     <div class="hero-photos" aria-hidden="true">
       <img class="on" src="images/mustard.jpg" alt=""><img src="images/chilli.jpg" alt=""><img src="images/schmaltz.jpg" alt=""><img src="images/7spiced.jpg" alt="">
     </div>
+    <div class="hero-bgword" id="hero-bgword" aria-hidden="true">MUSTARD</div>
     <canvas id="hero-canvas" aria-hidden="true"></canvas>
+    <svg class="stamp" viewBox="0 0 120 120" aria-hidden="true"><defs><path id="sp" d="M60,60 m-44,0 a44,44 0 1,1 88,0 a44,44 0 1,1 -88,0"/></defs><circle cx="60" cy="60" r="57" fill="none" stroke="currentColor" stroke-width="1.2"/><circle cx="60" cy="60" r="31" fill="none" stroke="currentColor" stroke-width="1"/><text font-size="10.4" letter-spacing="2.6" fill="currentColor" font-weight="600"><textPath href="#sp">FRESH · NEVER FROZEN · HANDMADE · MELBOURNE ·</textPath></text><path d="M42 62c6-9 18-12 30-8l6-5v18l-6-5c-12 4-24 1-30-8z" fill="currentColor" opacity=".9" transform="translate(-1 -2)"/></svg>
     <div class="hero-zone"></div>
 
     <div class="hero-top"><span class="cert">Kosher Australia certified &middot; Pareve</span></div>
@@ -105,7 +108,7 @@
     </div>
     <div class="about-copy" data-aos="fade-up" data-aos-delay="100">
       <div class="eyebrow">Our Story</div>
-      <h2>Melbourne's Newest Herring Supplier</h2>
+      <h2>Melbourne's <em>Newest</em> Herring Supplier</h2>
       <p>Maiben Herring Co. makes kosher herring in small batches in Melbourne. It is fresh, never frozen, and certified pareve by Kosher Australia.</p>
       <p>We started with family tables and shul kiddushes, and we still make everything the same way for both.</p>
       <div class="stats">
@@ -123,7 +126,7 @@
   <div class="container">
     <div class="section-head center" data-aos="fade-up">
       <div class="eyebrow">The Flavours</div>
-      <h2>Four Herrings, One Standard</h2>
+      <h2>Four Herrings, <em>One Standard</em></h2>
       <p>Handmade in small batches, kosher and pareve. Pick any flavour in any size.</p>
       <div class="tabs" role="tablist" aria-label="Filter flavours">
         <button class="tab active" role="tab" aria-selected="true" data-filter="all">All</button>
@@ -164,7 +167,7 @@
   </div>
   <div class="split-copy">
     <div class="eyebrow" data-aos="fade-up">Why Maiben</div>
-    <h2 data-aos="fade-up">Small Batches, Kosher, Local</h2>
+    <h2 data-aos="fade-up">Small Batches, <em>Kosher, Local</em></h2>
     <ul class="features">
       <li data-aos="fade-up"><span class="ico" aria-hidden="true">&#10003;</span><div><h3>Kosher Australia Certified</h3><p>Pareve, certified by Kosher Australia.</p></div></li>
       <li data-aos="fade-up" data-aos-delay="80"><span class="ico" aria-hidden="true">&#10003;</span><div><h3>Fresh, Never Frozen</h3><p>Handmade in small batches, so it is fresh when it reaches you.</p></div></li>
@@ -179,7 +182,7 @@
   <div class="container dest-grid">
     <div class="dest-copy" data-aos="fade-up">
       <div class="eyebrow">Sizes and Pricing</div>
-      <h2>The Same Price for Every Flavour</h2>
+      <h2>The Same Price for <em>Every Flavour</em></h2>
       <p>Pick any flavour in any size, from a 250g tub for the Shabbat table to 1kg for a kiddush.</p>
       <ul class="legend" aria-label="Flavours"><li><i style="--c:var(--f-mustard)"></i>Mustard</li><li><i style="--c:var(--f-chilli)"></i>Chilli</li><li><i style="--c:var(--f-schmaltz)"></i>Schmaltz</li><li><i style="--c:var(--f-spiced)"></i>7 Spiced</li></ul>
       <button class="btn-gold" data-open="booking-modal">Start an Order <span aria-hidden="true">&rarr;</span></button>
@@ -198,7 +201,7 @@
   <div class="container dest-grid">
     <div class="dest-copy" data-aos="fade-up">
       <div class="eyebrow">Perfect for Every Occasion</div>
-      <h2>On the Table For</h2>
+      <h2>On the <em>Table</em> For</h2>
       <p>From a Shabbat table to a full shul kiddush, there is a size and a flavour for it.</p>
       <button class="btn-gold" data-open="booking-modal">Start an Order <span aria-hidden="true">&rarr;</span></button>
       <div class="dest-nav">
@@ -226,7 +229,7 @@
   <div class="container cta-inner" data-aos="fade-up">
     <div class="cta-copy">
       <div class="eyebrow">Ordering for a Crowd?</div>
-      <h2>Call Benj for Bulk Quantities.</h2>
+      <h2>Call Benj for <em>Bulk</em> Quantities.</h2>
       <a class="btn-gold" href="tel:+61422601402">Call 0422 601 402 <span aria-hidden="true">&rarr;</span></a>
     </div>
   </div>
