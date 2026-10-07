@@ -21,6 +21,18 @@ function loadTex(src) {
   });
 }
 
+let _shadow;
+function shadowMat() {
+  if (!_shadow) {
+    const c = document.createElement('canvas'); c.width = c.height = 128;
+    const g = c.getContext('2d'); g.filter = 'blur(10px)'; g.fillStyle = 'rgba(20,38,63,.55)';
+    g.beginPath(); g.roundRect(22, 20, 84, 88, 12); g.fill();
+    const t = new THREE.CanvasTexture(c);
+    _shadow = new THREE.MeshBasicMaterial({ map: t, transparent: true, depthWrite: false, opacity: .5 });
+  }
+  return _shadow.clone();
+}
+
 function cardGeometry(w, h, bend) {
   const g = new THREE.PlaneGeometry(w, h, 40, 1);
   const p = g.attributes.position;
@@ -37,12 +49,11 @@ const cardMat = (map) => new THREE.ShaderMaterial({
     uniform sampler2D uMap; uniform float uFade; varying vec2 vUv;
     void main(){
       vec4 c = texture2D(uMap, vUv);
-      // Elliptical vignette: the photo dissolves into the backdrop, so no rectangle or cut-off table edge shows.
-      vec2 p = (vUv - vec2(.5, .53)) * vec2(1.62, 1.5);
-      float m = 1. - smoothstep(.5, .98, length(p));
-      m *= smoothstep(0., .12, vUv.x) * smoothstep(1., .88, vUv.x) * smoothstep(0., .1, vUv.y) * smoothstep(1., .9, vUv.y);
-      // Slight darkening towards the edge so it matches the backdrop tone
-      vec3 col = mix(c.rgb, vec3(.05,.04,.035), (1. - m) * .5);
+      // Rounded photo card with a thin anti-aliased edge (sits on the light backdrop)
+      vec2 q = abs(vUv - .5) * vec2(1., 1.) - (vec2(.5) - vec2(.07, .06));
+      float rd = length(max(q, 0.)) - .06;
+      float m = 1. - smoothstep(-.004, .004, rd);
+      vec3 col = c.rgb;
       gl_FragColor = vec4(col, m * uFade);
       #include <colorspace_fragment>
     }`,
@@ -76,8 +87,10 @@ export async function startHero(onStage) {
     const holder = new THREE.Group();
     holder.rotation.y = i * STEP;
     mesh.position.z = R;
-    holder.add(mesh); ring.add(holder);
-    return { mesh, m };
+    const sh = new THREE.Mesh(new THREE.PlaneGeometry(CW * 1.18, CH * 1.12), shadowMat());
+    sh.position.set(0, -0.22, R - 0.09);
+    holder.add(sh, mesh); ring.add(holder);
+    return { mesh, m, sh };
   });
 
   const glow = { material: { color: new THREE.Color() } };   // (backdrop glow removed: it muddied the photos)
@@ -90,7 +103,7 @@ export async function startHero(onStage) {
   }
   const pg = new THREE.BufferGeometry();
   pg.setAttribute('position', new THREE.BufferAttribute(pos, 3)); pg.setAttribute('color', new THREE.BufferAttribute(col, 3));
-  const pts = new THREE.Points(pg, new THREE.PointsMaterial({ size: 0.05, vertexColors: true, transparent: true, opacity: 0.55, depthWrite: false, sizeAttenuation: true, blending: THREE.AdditiveBlending }));
+  const pts = new THREE.Points(pg, new THREE.PointsMaterial({ size: 0.07, vertexColors: true, transparent: true, opacity: 0.5, depthWrite: false, sizeAttenuation: true, blending: THREE.NormalBlending }));
   rig.add(pts);
   const tint = (i) => {
     const cs = FLAVOURS[i].flecks.map((h) => new THREE.Color(h));
@@ -105,8 +118,8 @@ export async function startHero(onStage) {
     const w = innerWidth, h = innerHeight, wide = w / h > 1.15;
     renderer.setSize(w, h, false);
     camera.aspect = w / h; camera.fov = wide ? 32 : 40; camera.updateProjectionMatrix();
-    rig.position.set(wide ? Math.min(2.6, w / h * 1.45) : 0, wide ? -0.1 : 1.25, 0);
-    baseScale = wide ? 1.12 : Math.min(0.8, (w / h) * 1.7);
+    rig.position.set(wide ? Math.min(2.5, w / h * 1.4) : 0, wide ? -0.1 : 1.32, 0);
+    baseScale = wide ? 0.86 : Math.min(0.54, (w / h) * 1.2);
     rig.scale.setScalar(baseScale);
   };
   size(); addEventListener('resize', size, { passive: true });
@@ -239,7 +252,8 @@ export async function startHero(onStage) {
     const idx = Math.round(a / STEP) % N;
     cards.forEach(({ m }, i) => {
       const th = i * STEP + angle; const d = Math.abs((((th % (Math.PI * 2)) + Math.PI * 3) % (Math.PI * 2)) - Math.PI);   // 0 = facing camera
-      m.uniforms.uFade.value = THREE.MathUtils.clamp(1 - d / 1.2, 0, 1);   // neighbours dissolve instead of hanging at the edges
+      const f = THREE.MathUtils.clamp(1 - d / 1.2, 0, 1);   // neighbours dissolve instead of hanging at the edges
+      m.uniforms.uFade.value = f; cards[i].sh.material.opacity = 0.5 * f;
     });
     if (idx !== shown) { shown = idx; active = idx; tint(idx); onStage(idx, 0.15 + 0.85 * (idx / (N - 1))); }
 
