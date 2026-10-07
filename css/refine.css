@@ -93,3 +93,30 @@ h2 em,.stage h1 em,.stage h2 em{font-style:italic;font-weight:400;color:var(--am
   .hero-btns{justify-content:center}
   .eyebrow-hero{text-align:center}
 }
+
+/* ---- Forms saved to the database ---- */
+.hp{position:absolute!important;left:-9999px;width:1px;height:1px;opacity:0}
+.opt{text-transform:none;letter-spacing:0;font-weight:400;opacity:.7}
+.bk-total{margin:4px 0 14px;font-family:var(--font-serif);font-size:22px;color:var(--ink)}
+.form-msg.err{color:#B83A2C!important;font-weight:500}
+.ok-badge{width:56px;height:56px;border-radius:50%;display:grid;place-items:center;background:var(--f-schmaltz);color:#fff;font-size:26px;margin:0 auto 14px}
+.order-out{text-align:center}
+.order-out h3{font-size:30px;margin-bottom:12px}
+.order-out .btn-gold{margin-top:8px}
+.foot-note{text-align:center}
+.cta-btns{display:flex;flex-wrap:wrap;gap:12px;align-items:center;justify-content:flex-end}
+.cta-call{color:#fff!important;border-color:rgba(255,255,255,.5)!important;background:rgba(255,255,255,.12)!important}
+@media (max-width:992px){.cta-btns{justify-content:flex-start}.cta-btns .btn-gold{width:100%}.cta-call{width:100%;justify-content:center}}
+
+/* ---- Bolder flavour backgrounds: the whole hero takes on the flavour ---- */
+.hero-sticky-frame{background:
+  radial-gradient(ellipse 52% 72% at 74% 50%,color-mix(in srgb,var(--flav) 58%,#fff) 0%,color-mix(in srgb,var(--flav) 26%,rgba(255,255,255,0)) 62%,rgba(255,255,255,0) 82%),
+  radial-gradient(ellipse 60% 55% at 6% 100%,color-mix(in srgb,var(--flav) 34%,transparent) 0%,transparent 70%),
+  linear-gradient(160deg,color-mix(in srgb,var(--flav) 44%,#FBF6EA) 0%,color-mix(in srgb,var(--flav) 28%,#FBF6EA) 55%,color-mix(in srgb,var(--flav) 38%,#F1E4CF) 100%)}
+.hero-bgword{color:color-mix(in srgb,var(--flav) 26%,transparent)}
+.cert{background:rgba(255,255,255,.82)}
+@media (max-width:992px){
+  .hero-sticky-frame{background:
+    radial-gradient(ellipse 90% 40% at 50% 26%,color-mix(in srgb,var(--flav) 46%,#fff) 0%,rgba(255,255,255,0) 75%),
+    linear-gradient(180deg,color-mix(in srgb,var(--flav) 32%,#FBF6EA) 0%,color-mix(in srgb,var(--flav) 16%,#FBF6EA) 100%)}
+}

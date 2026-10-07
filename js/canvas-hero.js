@@ -8,7 +8,7 @@ const fill = document.getElementById('hud-fill');
 const frame = document.querySelector('.hero-sticky-frame');
 const WORD = ['MUSTARD', 'CHILLI', 'SCHMALTZ', '7 SPICED'];
 const bgword = document.getElementById('hero-bgword');
-const FLAV = ['#D9A41E', '#B83A2C', '#6E8B3D', '#8A5A33'];   // mustard, chilli, schmaltz, 7 spiced
+const FLAV = ['#D9A41E', '#C8281A', '#6E8B3D', '#8A5A33'];   // mustard, chilli, schmaltz, 7 spiced
 let shown = -1;
 
 function onStage(i, pct) {

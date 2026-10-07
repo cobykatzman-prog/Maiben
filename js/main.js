@@ -85,29 +85,95 @@
   sIn.addEventListener('input', () => runSearch(sIn.value));
   $$('.chips button').forEach((b) => b.addEventListener('click', () => { sIn.value = b.dataset.q; runSearch(b.dataset.q); sIn.focus(); }));
 
-  /* Order form: builds a summary to confirm by phone (no backend) */
+  /* ---- Orders + enquiries: saved to Supabase, then (orders only) on to payment ---- */
+  const CFG = window.MAIBEN || {};
   const PRICE = { 250: 15, 500: 28, 750: 40, 1000: 50 };
-  const bkForm = $('#booking-form');
-  const PHONE = '61422601402';
-  const out = $('#order-out');
-  let orderText = '';
-  bkForm.addEventListener('submit', (e) => {
-    e.preventDefault();
-    const f = $('#bk-flavour').value, size = +$('#bk-size').value, qty = Math.max(1, +$('#bk-qty').value || 1);
-    const sz = size >= 1000 ? '1kg' : size + 'g', total = PRICE[size] * qty;
-    const name = $('#bk-name').value.trim(), how = $('#bk-how').value;
-    orderText = `Hi Benj, order from the website:\n${qty} x ${sz} ${f} herring ($${total})\n${how}\nName: ${name}`;
-    $('#order-sum').textContent = `${qty} × ${sz} ${f} = $${total} · ${how}`;
-    $('#send-sms').href = `sms:+${PHONE}?body=${encodeURIComponent(orderText)}`;
-    $('#send-wa').href = `https://wa.me/${PHONE}?text=${encodeURIComponent(orderText)}`;
-    out.hidden = false; bkForm.hidden = true;
+  const sizeLabel = (g) => (g >= 1000 ? '1kg' : g + 'g');
+  const bkForm = $('#booking-form'), out = $('#order-out');
+  const emailOk = (v) => !v || /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v);
+  const save = async (table, row) => {
+    const r = await fetch(`${CFG.supabaseUrl}/rest/v1/${table}`, {
+      method: 'POST',
+      headers: { apikey: CFG.supabaseKey, 'Content-Type': 'application/json', Prefer: 'return=minimal' },
+      body: JSON.stringify(row),
+    });
+    if (!r.ok) throw new Error('save failed ' + r.status);
+  };
+  const fail = (el, msg) => { el.textContent = msg; el.classList.add('err'); };
+  const callLine = () => `Or call Benj on ${CFG.phone || '0422 601 402'}.`;
+
+  const updateTotal = () => {
+    const q = Math.max(1, Math.min(99, +$('#bk-qty').value || 1)), g = +$('#bk-size').value;
+    $('#bk-total').textContent = `${q} × ${sizeLabel(g)} ${$('#bk-flavour').value} = $${PRICE[g] * q}`;
+  };
+  ['#bk-flavour', '#bk-size', '#bk-qty'].forEach((s) => $(s).addEventListener('input', updateTotal));
+  $$('.stepper button').forEach((b) => b.addEventListener('click', () => setTimeout(updateTotal, 0)));
+  $('#bk-how').addEventListener('change', () => {
+    const d = $('#bk-how').value === 'delivery';
+    $('#bk-addr-wrap').hidden = !d; $('#bk-addr').required = d;
   });
-  $('#copy-order').addEventListener('click', async (e) => {
-    try { await navigator.clipboard.writeText(orderText); e.target.textContent = 'Copied'; } catch (err) { e.target.textContent = 'Copy failed'; }
-    setTimeout(() => { e.target.textContent = 'Copy order text'; }, 1800);
+  updateTotal();
+
+  bkForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const msg = $('#bk-msg'); msg.classList.remove('err'); msg.textContent = '';
+    const fd = new FormData(bkForm);
+    if (fd.get('website')) { out.hidden = false; bkForm.hidden = true; return; }          // honeypot: pretend success
+    const name = (fd.get('name') || '').trim(), phone = (fd.get('phone') || '').trim(), email = (fd.get('email') || '').trim();
+    const how = fd.get('fulfilment'), addr = (fd.get('address') || '').trim();
+    if (!name) return fail(msg, 'Please add your name.');
+    if (phone.replace(/\D/g, '').length < 6) return fail(msg, 'Please add a mobile number we can reach you on.');
+    if (!emailOk(email)) return fail(msg, 'That email address does not look right.');
+    if (how === 'delivery' && addr.length < 5) return fail(msg, 'Please add your delivery address.');
+    const row = {
+      id: crypto.randomUUID(), flavour: fd.get('flavour'), size_g: +fd.get('size_g'), quantity: Math.max(1, Math.min(99, +fd.get('quantity') || 1)),
+      fulfilment: how, name, phone, email: email || null, address: how === 'delivery' ? addr : null, notes: (fd.get('notes') || '').trim() || null,
+    };
+    const btn = $('#bk-submit'); btn.disabled = true; btn.firstChild.textContent = 'Saving your order… ';
+    try {
+      await save('orders', row);
+    } catch (err) {
+      btn.disabled = false; btn.firstChild.textContent = 'Place Order & Pay ';
+      return fail(msg, `We could not save your order just now. Please try again. ${callLine()}`);
+    }
+    const total = PRICE[row.size_g] * row.quantity;
+    $('#order-sum').textContent = `${row.quantity} × ${sizeLabel(row.size_g)} ${row.flavour} · $${total} · ${how === 'delivery' ? 'Melbourne delivery' : 'Pickup'}`;
+    $('#order-ref').textContent = `Reference ${row.id.slice(0, 8).toUpperCase()}`;
+    const pay = CFG.paymentUrl;
+    $('#pay-btn').href = pay || '#';
+    $('#pay-note').textContent = pay ? `Your order is saved. Pay $${total} on the next page to confirm it.` : `Your order is saved. Benj will send you a payment link shortly.`;
+    $('#pay-btn').hidden = !pay;
+    out.hidden = false; bkForm.hidden = true;
+    try { navigator.vibrate && navigator.vibrate(12); } catch (e2) {}
   });
   // Reopening the sheet starts a fresh order
-  document.addEventListener('click', (e) => { if (e.target.closest('[data-open="booking-modal"],.ab-order')) { out.hidden = true; bkForm.hidden = false; } }, true);
+  document.addEventListener('click', (e) => {
+    if (e.target.closest('[data-open="booking-modal"],.ab-order')) {
+      out.hidden = true; bkForm.hidden = false; $('#bk-submit').disabled = false; $('#bk-submit').firstChild.textContent = 'Place Order & Pay '; $('#bk-msg').textContent = ''; updateTotal();
+    }
+    if (e.target.closest('[data-open="enquiry-modal"]')) { $('#eq-done').hidden = true; $('#enquiry-form').hidden = false; $('#eq-msg').textContent = ''; }
+  }, true);
+
+  const eqForm = $('#enquiry-form');
+  eqForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const msg = $('#eq-msg'); msg.classList.remove('err'); msg.textContent = '';
+    const fd = new FormData(eqForm);
+    if (fd.get('website')) { $('#eq-done').hidden = false; eqForm.hidden = true; return; }
+    const name = (fd.get('name') || '').trim(), phone = (fd.get('phone') || '').trim(), email = (fd.get('email') || '').trim(), details = (fd.get('details') || '').trim();
+    if (!name) return fail(msg, 'Please add your name.');
+    if (phone.replace(/\D/g, '').length < 6) return fail(msg, 'Please add a mobile number we can reach you on.');
+    if (!emailOk(email)) return fail(msg, 'That email address does not look right.');
+    if (!details) return fail(msg, 'Tell us roughly what you need.');
+    const btn = $('#eq-submit'); btn.disabled = true; btn.firstChild.textContent = 'Sending… ';
+    try {
+      await save('enquiries', { id: crypto.randomUUID(), name, phone, email: email || null, occasion: fd.get('occasion'), needed_by: (fd.get('needed_by') || '').trim() || null, details });
+      $('#eq-done').hidden = false; eqForm.hidden = true; eqForm.reset();
+    } catch (err) {
+      fail(msg, `We could not send that just now. Please try again. ${callLine()}`);
+    }
+    btn.disabled = false; btn.firstChild.textContent = 'Send Enquiry ';
+  });
   $('#newsletter')?.addEventListener('submit', (e) => e.preventDefault());
 
   /* Flavour filter + details modal */

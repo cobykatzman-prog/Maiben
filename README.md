@@ -10,3 +10,9 @@ Static site on the shared luxury base. Serve with `npx serve maiben`.
 
 ## Content
 Flavours, prices, phone and Instagram come from the original Maiben site. Orders are not sent anywhere: the order form shows a summary to confirm by phone/text. Add a real order endpoint or email before relying on it.
+
+## Orders and enquiries
+Forms are submitted on the site and saved to Supabase (project `maiben`, `fnhtcfwjdajsrcmpizki`, Sydney). The only link customers leave the site for is `paymentUrl` in `js/config.js`.
+- Read them: Supabase dashboard > Table Editor > `orders` / `enquiries` (Export to CSV from the table toolbar).
+- The key in `js/config.js` is a publishable key. Row-level security lets it INSERT only; it cannot read or change rows. Totals are recomputed by a database trigger, so prices cannot be tampered with from the browser.
+- `orders.status` starts as `new`; change it in the dashboard as orders are paid and fulfilled.
