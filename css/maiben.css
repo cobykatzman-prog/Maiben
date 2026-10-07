@@ -41,7 +41,7 @@
 .pricetable td{font-size:17px}
 .pricetable td:last-child,.pricetable th:last-child{text-align:right;font-weight:600}
 .pricetable tr:last-child td{border-bottom:0}
-.destinations{overflow:visible}
+
 .occasions{background:var(--color-cream-card);padding:110px 0}
 .occ{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:22px;margin-top:36px}
 .occ li{border-top:1.5px solid var(--color-gold);padding-top:14px;font-family:var(--font-serif);font-size:26px;font-weight:600;line-height:1.2}
@@ -63,3 +63,12 @@
 .btn-ghost.wide{width:100%;justify-content:center;min-height:48px}
 .link-btn{color:var(--color-gold-light);text-decoration:underline;font-size:14px;padding:8px;justify-self:center}
 #booking-form[hidden]{display:none}
+
+/* About + stats */
+.about .stat-figure{font-size:44px}
+.about-visual img{object-position:50% 55%}
+.about .since{font-size:30px}
+.occ-card{aspect-ratio:4/5}
+.occ-card img{object-position:center 50%}
+.occ-card .dc-label h3{font-size:28px;line-height:1.15}
+.pricing{padding-bottom:110px}

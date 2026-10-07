@@ -151,6 +151,15 @@
   /* AOS */
   if (window.AOS) AOS.init({ duration: 800, easing: 'ease-out-cubic', once: true, offset: 60, disable: reduced });
 
+  /* Occasions slider (Swiper 11) */
+  if (window.Swiper && $('#destinations-slider')) {
+    new Swiper('#destinations-slider', {
+      speed: 800, slidesPerView: 1.08, spaceBetween: 16, grabCursor: true, watchOverflow: true,
+      navigation: { prevEl: '.dest-prev-btn', nextEl: '.dest-next-btn' },
+      breakpoints: { 481: { slidesPerView: 1.25, spaceBetween: 20 }, 769: { slidesPerView: 2.2, spaceBetween: 24 }, 1280: { slidesPerView: 2.8, spaceBetween: 32 } },
+    });
+  }
+
   /* Custom trailing cursor */
   if (matchMedia('(pointer:fine)').matches && !reduced) {
     const dot = $('#cursor-dot'), ring = $('#cursor-ring');
