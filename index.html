@@ -6,12 +6,16 @@
 <meta name="theme-color" content="#0d0b0a">
 <title>Maiben Herring Co. | Kosher Herring, Melbourne</title>
 <meta name="description" content="Handmade kosher herring in four flavours: Mustard, Chilli, Schmaltz and 7 Spiced. Melbourne's newest herring supplier. Order for Shabbat, yom tov and simchas.">
-<link rel="canonical" href="https://maibenherring.com.au/">
 <meta property="og:type" content="website">
 <meta property="og:title" content="Maiben Herring Co.">
 <meta property="og:description" content="Handmade kosher herring in four flavours. Melbourne's newest herring supplier.">
-<meta property="og:image" content="images/tubs.jpg">
 <link rel="icon" href="images/logo.png">
+<link rel="preload" as="image" href="images/mustard.jpg">
+<link rel="modulepreload" href="js/vendor/three.module.min.js">
+<link rel="modulepreload" href="js/hero-3d.js">
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"FoodEstablishment","name":"Maiben Herring Co.","description":"Handmade kosher herring in four flavours, certified pareve by Kosher Australia. Melbourne's newest herring supplier.","telephone":"+61422601402","areaServed":"Melbourne, Australia","sameAs":["https://www.instagram.com/maibenherring/"],"hasOfferCatalog":{"@type":"OfferCatalog","name":"Herring","itemListElement":[{"@type":"Product","name":"Mustard herring","description":"Tangy, light and our bestseller","image":"images/mustard.jpg","offers":{"@type":"AggregateOffer","priceCurrency":"AUD","lowPrice":"15","highPrice":"50","offerCount":"4"}},{"@type":"Product","name":"Chilli herring","description":"Spicy, aromatic and flavourful","image":"images/chilli.jpg","offers":{"@type":"AggregateOffer","priceCurrency":"AUD","lowPrice":"15","highPrice":"50","offerCount":"4"}},{"@type":"Product","name":"Schmaltz herring","description":"Traditional, classic and the original","image":"images/schmaltz.jpg","offers":{"@type":"AggregateOffer","priceCurrency":"AUD","lowPrice":"15","highPrice":"50","offerCount":"4"}},{"@type":"Product","name":"7 Spiced herring","description":"A unique blend of 7 aromatic spices","image":"images/7spiced.jpg","offers":{"@type":"AggregateOffer","priceCurrency":"AUD","lowPrice":"15","highPrice":"50","offerCount":"4"}}]}}
+</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,600&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -213,10 +217,17 @@
       <div class="field"><label for="bk-flavour">Flavour</label><select id="bk-flavour"><option>Mustard</option><option>Chilli</option><option>Schmaltz</option><option>7 Spiced</option></select></div>
       <div class="row2"><div class="field"><label for="bk-size">Size</label><select id="bk-size"><option value="250">250g · $15</option><option value="500">500g · $28</option><option value="750">750g · $40</option><option value="1000">1kg · $50</option></select></div>
       <div class="field"><label for="bk-qty">Quantity</label><div class="stepper"><button type="button" data-step="-1" aria-label="Fewer">&minus;</button><input id="bk-qty" type="number" inputmode="numeric" min="1" max="99" value="1"><button type="button" data-step="1" aria-label="More">+</button></div></div></div>
-      <button class="btn-gold wide" type="submit">Get Order Summary <span aria-hidden="true">&rarr;</span></button>
-      <p class="form-msg" id="bk-msg" role="status"></p>
+      <div class="row2"><div class="field"><label for="bk-name">Your name</label><input id="bk-name" autocomplete="name" placeholder="Name" required></div>
+      <div class="field"><label for="bk-how">Pickup or delivery</label><select id="bk-how"><option>Pickup</option><option>Melbourne delivery</option></select></div></div>
+      <button class="btn-gold wide" type="submit">Review Order <span aria-hidden="true">&rarr;</span></button>
     </form>
-    <p class="note-small">Orders are confirmed by phone or text. Prefer a form? Use the <a href="https://bit.ly/MaibenHerringOrders">online order form</a>.</p>
+    <div class="order-out" id="order-out" hidden>
+      <p class="order-sum" id="order-sum"></p>
+      <a class="btn-gold wide" id="send-sms" href="#">Text order to Benj <span aria-hidden="true">&rarr;</span></a>
+      <a class="btn-ghost wide" id="send-wa" href="#" target="_blank" rel="noopener">Send on WhatsApp</a>
+      <button class="link-btn" id="copy-order" type="button">Copy order text</button>
+    </div>
+    <p class="note-small">Benj confirms every order by text or call, with delivery details. Prefer a form? Use the <a href="https://bit.ly/MaibenHerringOrders">online order form</a>.</p>
   </div>
 </div>
 

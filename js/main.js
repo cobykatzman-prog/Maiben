@@ -88,16 +88,26 @@
   /* Order form: builds a summary to confirm by phone (no backend) */
   const PRICE = { 250: 15, 500: 28, 750: 40, 1000: 50 };
   const bkForm = $('#booking-form');
+  const PHONE = '61422601402';
+  const out = $('#order-out');
+  let orderText = '';
   bkForm.addEventListener('submit', (e) => {
     e.preventDefault();
-    const f = $('#bk-flavour').value, size = +$('#bk-size').value, qty = Math.max(1, +$('#bk-qty').value || 1), msg = $('#bk-msg');
-    const total = PRICE[size] * qty;
-    msg.innerHTML = '';
-    const p = document.createElement('span');
-    p.textContent = `${qty} × ${size >= 1000 ? '1kg' : size + 'g'} ${f} = $${total}. To confirm, call or text Benj on `;
-    const a = document.createElement('a'); a.href = 'tel:+61422601402'; a.textContent = '0422 601 402'; a.style.textDecoration = 'underline';
-    msg.append(p, a, '.');
+    const f = $('#bk-flavour').value, size = +$('#bk-size').value, qty = Math.max(1, +$('#bk-qty').value || 1);
+    const sz = size >= 1000 ? '1kg' : size + 'g', total = PRICE[size] * qty;
+    const name = $('#bk-name').value.trim(), how = $('#bk-how').value;
+    orderText = `Hi Benj, order from the website:\n${qty} x ${sz} ${f} herring ($${total})\n${how}\nName: ${name}`;
+    $('#order-sum').textContent = `${qty} × ${sz} ${f} = $${total} · ${how}`;
+    $('#send-sms').href = `sms:+${PHONE}?body=${encodeURIComponent(orderText)}`;
+    $('#send-wa').href = `https://wa.me/${PHONE}?text=${encodeURIComponent(orderText)}`;
+    out.hidden = false; bkForm.hidden = true;
   });
+  $('#copy-order').addEventListener('click', async (e) => {
+    try { await navigator.clipboard.writeText(orderText); e.target.textContent = 'Copied'; } catch (err) { e.target.textContent = 'Copy failed'; }
+    setTimeout(() => { e.target.textContent = 'Copy order text'; }, 1800);
+  });
+  // Reopening the sheet starts a fresh order
+  document.addEventListener('click', (e) => { if (e.target.closest('[data-open="booking-modal"],.ab-order')) { out.hidden = true; bkForm.hidden = false; } }, true);
   $('#newsletter')?.addEventListener('submit', (e) => e.preventDefault());
 
   /* Flavour filter + details modal */
