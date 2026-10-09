@@ -160,9 +160,6 @@ p{color:var(--ink-2)}
 .search-results span{color:var(--ink-3)}
 .search-modal .modal-close{color:var(--ink)}
 
-/* ---------- Cursor ---------- */
-#cursor-dot{background:var(--ink)}#cursor-ring{border-color:var(--ink)}
-#cursor-ring.hover{background:rgba(232,163,61,.2);mix-blend-mode:normal}
 
 /* ---------- Mobile ---------- */
 @media (max-width:992px){
